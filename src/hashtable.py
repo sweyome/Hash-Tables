@@ -32,7 +32,10 @@ class HashTable:
 
         OPTIONAL STRETCH: Research and implement DJB2
         '''
-        pass
+        hash = 5381
+        for x in key:
+            hash = ((hash << 5) + hash) + ord(x)
+        return hash
 
 
     def _hash_mod(self, key):
@@ -54,7 +57,24 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        current = self.storage[index]  # Pair at current index
+        last = None  # Pair to insert
+
+        # Check if current location is empty
+        # Handle collisions by adding new LinkedPair
+        while current and current.key != key:
+            last = current
+            current = last.next
+        # If a node is found with same key
+        if current:
+            current.value = value
+        # If a node is not found
+        else:
+            new = LinkedPair(key, value)
+            new.next = self.storage[index]
+            self.storage[index] = new
+
 
 
 
@@ -66,7 +86,22 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        last = None
+        current = self.storage[index]
+        while current and current.key != key:
+            last = current
+            current = current.next
+        # If key isn't found
+        if self.storage[index] is None:
+            print("Key could not be found.")
+        # If key is found
+        else:
+            # Remove the first element in the linked list
+            if last is None:
+                self.storage[index] = current.next
+            else:
+                last.next = current.next
 
 
     def retrieve(self, key):
@@ -77,9 +112,16 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        current = self.storage[index]
+        while current:
+            if current.key == key:
+                return current.value
+            else:
+                current = current.next
+        return None
 
-
+    
     def resize(self):
         '''
         Doubles the capacity of the hash table and
